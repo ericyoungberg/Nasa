@@ -2,8 +2,8 @@ nasa.launch('tester', function() {
 
   return {
 
-    someMethod: function() {
-      console.log("Called someMethod"); 
+    someMethod: function(string) {
+      console.log("Called someMethod: " + string); 
     }
 
   };
