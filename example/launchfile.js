@@ -1,15 +1,13 @@
 (function() {
 
-  nasa.config({
+  Nasa.config({
     'namespace': '/example'
   });
 
-  nasa.houston({
-    "index.html": [
-      'another',
-      'tester',
-      'newer'
-    ] 
+  Nasa.houston({
+    "/": [ 'another', 'tester', 'newer' ],
+    "/**/*.html": ['tester', 'killer' ],
+    '/other/dyn.*': ['tester', 'killerer']
   });
 
 })();

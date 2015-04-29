@@ -1,6 +1,6 @@
-nasa.launch('another', function() {
+Nasa.launch('another', function() {
 
-  var tester = nasa.land('tester')();
+  var tester = Nasa.land('tester')();
 
   tester.someMethod('First');
 

@@ -53,13 +53,13 @@ module.exports = function(grunt) {
           {
             expand: true,
             cwd: 'tmp/',
-            src: ['nasa.js'],
+            src: ['Nasa.js'],
             dest: 'dist/'
           },
           {
             expand: true,
             cwd: 'tmp/',
-            src: ['nasa.min.js'],
+            src: ['Nasa.min.js'],
             dest: 'dist/'
           }
         ]
@@ -72,7 +72,7 @@ module.exports = function(grunt) {
           beautify: true 
         },
 				files: {
-          'tmp/nasa.min.js': [
+          'tmp/Nasa.min.js': [
           'lib/*.js', 
           'lib/**/*.js'
           ]
