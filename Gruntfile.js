@@ -66,10 +66,17 @@ module.exports = function(grunt) {
       }
 		},
 
+    concat: {
+      dist: {
+        src: ['lib/Nasa.js', 'lib/**/*.js'],
+        dest: 'dist/Nasa.js'
+      } 
+    },
+
 		uglify: {
 			local: {
         options: {
-          beautify: true 
+          beautify: false
         },
 				files: {
           'tmp/Nasa.min.js': [
@@ -96,11 +103,12 @@ module.exports = function(grunt) {
     console.log("Building...");
     grunt.task.run([
       'uglify:local',
+      'concat:dist',
       'copy:dist'
     ]);
   });
 
 	//Default task
-	grunt.registerTask('default', ['uglify:local', 'copy:dist']);
+	grunt.registerTask('default', ['uglify:local', 'concat:dist', 'copy:dist']);
 
 }
