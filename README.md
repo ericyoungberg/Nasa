@@ -6,6 +6,9 @@ Nasa is a JavaScript Module Launcher that loads the modules you create based upo
 
 This is where Nasa comes in.
 
+## Installation
+With Bower: `bower install nasa`
+
 ##Houston
 Houston handles what we call your flight schedule. You pass houston an object that specifies which modules need to be launched at which route.
 
