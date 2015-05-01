@@ -2,7 +2,12 @@
 The simple JavaScript Module Launcher
 
 ##What is Nasa?
-Nasa is a JavaScript Module Launcher that loads the modules you create based upon your application's current route. Since server-rendered applications have no way of determining how to react whenever the user interacts without re-rendering, we use JavaScript for that purpose. The problem with large concatenated JavaScript files is that there is no way to specify which parts are needed throughout your application's lifecycle unless you manually load each module as its own separate .js file. This causes a whole mess of issues. AMD and CommonJS never addressed this issue; only providing methods for loading modules, not catering them to your app state. 
+Nasa is a JavaScript Module Launcher that loads the modules you create based upon your application's current route. 
+Since server-rendered applications have no way of determining how to react whenever the user interacts without re-rendering, 
+we use JavaScript for that purpose. The problem with large concatenated JavaScript files is that there is no way to specify which 
+parts are needed throughout your application's lifecycle unless you manually load each module as its own separate .js file. This 
+causes a whole mess of issues. AMD, CommonJS, and ES6 never addressed this issue; only providing methods for loading modules, 
+not catering them to your app state. 
 
 This is where Nasa comes in.
 
@@ -17,6 +22,14 @@ Nasa.houston({
     '/': ['module1', 'module2'],
     '/**/edit': ['module1', 'module3']
 });
+```
+You should place your houston and config method calls at the end of all of your Javascript. 
+If `houston` and `config` are placed in a launchfile, the basic order that you should concatenate is:
+
+```JavaScript
+<script src="nasa.min.js"></script>
+<script src="app.js"></script>
+<script src="launchfile.js"></script>
 ```
 
 ##Modules
