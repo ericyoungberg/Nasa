@@ -20,10 +20,11 @@ Houston handles what we call your flight schedule. You pass houston an object th
 ```JavaScript
 Nasa.houston({
     '/': ['module1', 'module2'],
-    '/**/edit': ['module1', 'module3']
+    '/*/edit': ['module1', 'module3'],
+    '/admin/*': ['module4']
 });
 ```
-You should place your houston and config method calls at the end of all of your Javascript. 
+You should place your houston and config method calls at the end of all of your JavaScript. 
 If `houston` and `config` are placed in a launchfile, the basic order that you should concatenate is:
 
 ```JavaScript
