@@ -52,13 +52,18 @@ Nasa.launch('module2', function() {
 ```
 
 ##Configuration
-So far the only option that we have for our configuration method is to specify your root folder. So say Nasa is at _http://www.yoursite.com/blog/_ in your app or site...
+So far the only option that we have for our configuration method is to specify your root folder and whether the routes 
+cascade. So say Nasa is at _http://www.yoursite.com/blog/_ in your app or site...
 
 ```JavaScript
 Nasa.config({
-    root: '/blog'
+    root: '/blog',
+    cascade: true
 });
 ```
+
+The default value for cascading is `true` which means that once houston finds a route, it will keep processing the routes 
+below it to check if there are more modules to launch in other applicable routes.
 
 ##Questions?
 Contact me at _eric@lmtlss.net_ or submit a PR.

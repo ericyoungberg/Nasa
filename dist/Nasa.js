@@ -1,8 +1,8 @@
 /*
- * @file: Nasa.js
+ * Nasa.js
  * @author: Eric Youngberg <eric@lmtlss.net>
  *
- * Nasa (1.1.0)
+ * Nasa (1.2.0)
  * The simple JavaScript Module Launcher
  *
  * See README.md
@@ -52,7 +52,7 @@ var Nasa = {
 };
 
 /*
- * @file engine/location
+ * engine/location
  * @module Nasa.Engine
  *
  * @return String location
@@ -79,7 +79,7 @@ Nasa.Engine = (function(__export__) {
 })(Nasa.Engine);
 
 /*
- * @file engine/route
+ * engine/route
  * @module Nasa.Engine
  *
  * Defines the methods for parsing and handle routes
@@ -279,7 +279,7 @@ Nasa.Engine = (function(__export__) {
 })(Nasa.Engine);
 
 /*
- * @file interface/config
+ * interface/config
  * @module Nasa
  *
  * @param Object options
@@ -290,12 +290,12 @@ Nasa.Engine = (function(__export__) {
 Nasa = (function(__export__) {
 
   /*
-   * filterNamespace
+   * _filterNamespace
    *
    * @param String namespace
    * @return String
    */
-  function filterNamespace(namespace) {
+  function _filterNamespace(namespace) {
     return (namespace.charAt(namespace.length - 1) == '/') ? namespace.substr(0, namespace.length - 2) : namespace;  
   }
 
@@ -306,7 +306,9 @@ Nasa = (function(__export__) {
    */
   __export__.config = function(options) {
 
-    options['root'] = filterNamespace(options['root']);
+    if(options['root']) options['root'] = _filterNamespace(options['root']);
+
+    if(options['cascade'] && typeof options['cascade'] !== 'boolean') return console.error('Nasa: config(): Cascade must be a boolean value.');
 
     Nasa.__config__ = options; 
   }
@@ -317,15 +319,24 @@ Nasa = (function(__export__) {
 })(Nasa);
 
 /*
- * @file interface/houston
- * @module Nasa.houston
+ * interface/houston
+ * @module Nasa
  *
  * @param Object schedule
+ * @param Boolean cascade
+ *
+ * Analyzes the flight schedule and passes each route to the Engine.route module
+ * for parsing.
  */
 
 Nasa = (function(__export__) {
 
-  __export__.houston = function(schedule) {
+  __export__.houston = function(schedule, cascade) {
+
+    // Set the default value for cascading to true
+    if (typeof cascade === 'undefined') {
+      cascade = (typeof Nasa.__config__['cascade'] === 'undefined') ? true : Nasa.__config__['cascade'];
+    }
 
     // Place the schedule in our current flight to reference
     // from other internal modules.
@@ -336,9 +347,9 @@ Nasa = (function(__export__) {
 
       // Check our route based on whether it is dynamic or not
       if(route.indexOf('*') !== -1) {
-        if(Nasa.Engine.checkDynamic(route)) return false;
+        if(Nasa.Engine.checkDynamic(route)) return cascade;
       } else {
-        if(Nasa.Engine.check(route)) return false;
+        if(Nasa.Engine.check(route)) return cascade;
       }
 
       // .every requires that we return either true or false which
@@ -353,7 +364,7 @@ Nasa = (function(__export__) {
 })(Nasa);
 
 /*
- * @file interface/land
+ * interface/land
  * @module Nasa
  *
  * @param String name
@@ -372,7 +383,7 @@ Nasa = (function(__export__) {
       if(Nasa.__modules__[name]){
         return Nasa.__modules__[name](); 
       } else {
-        console.log('Nasa.land(' + name + '): ' + name + ' doesn\'t exist.'); 
+        console.error('Nasa.land(' + name + '): ' + name + ' doesn\'t exist.'); 
       }
 
     } else {
@@ -385,7 +396,7 @@ Nasa = (function(__export__) {
 })(Nasa);
 
 /*
- * @file interface/launch
+ * interface/launch
  * @module Nasa
  *
  * @param String name
