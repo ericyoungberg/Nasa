@@ -2,7 +2,7 @@
  * Nasa.js
  * @author: Eric Youngberg <eric@lmtlss.net>
  *
- * Nasa (1.2.0)
+ * Nasa (1.3.0)
  * The simple JavaScript Module Launcher
  *
  * See README.md
@@ -50,6 +50,43 @@ var Nasa = {
   __flight__: {}
 
 };
+
+/*
+ * engine/dbug
+ * @module Nasa.Engine
+ *
+ * @param String message || Boolean Header/Footer
+ *
+ * Creates debug messages based upon whether the debug option is set
+ * in the __config__.
+ */
+
+Nasa.Engine = (function(__export__) {
+
+  __export__.dbug = function(message) {
+
+    if(Nasa.__config__['debug']) {
+      if(typeof message === 'boolean') {
+        if(message) {
+          console.log("DEBUG | Nasa: Beginning debug session for this Houston instance...");
+          console.log("DEBUG | Nasa: -------------------------------------------------------");
+          console.log("DEBUG | Nasa: CONFIG = " + JSON.stringify(Nasa.__config__));
+          console.log("DEBUG |");
+        } else {
+          console.log("DEBUG |");
+          console.log("DEBUG | Nasa: -------------------------------------------------------");
+          console.log("DEBUG | Nasa: Ending debug session./") 
+        } 
+      } else {
+        console.log("DEBUG | Nasa: " + message);
+      }
+    }
+  }
+
+
+  return __export__;
+
+})(Nasa.Engine);
 
 /*
  * engine/location
@@ -105,6 +142,11 @@ Nasa.Engine = (function(__export__) {
    * Loads all of the modules associated with that route.
    */
   function _execute(route) {
+  
+    /* DEBUG
+    */
+   Nasa.Engine.dbug("Executed the route '"+ route +"'\n");
+
     Nasa.__flight__.schedule[route].forEach(function(module) {
       Nasa.__modules__[module](); 
     });
@@ -123,14 +165,17 @@ Nasa.Engine = (function(__export__) {
  
     // If the route starts out as a dynamic segment, then find where
     // the location should start.
-    if(_routeBoom[0] === '*') {
+    if(_routeBoom[0] === '**') {
+
+      Nasa.Engine.dbug('Found dynamic beginning on ' + _routeBoom.join('/'));
 
       var oldLength = _locationBoom.length;    // Save the current length for comparison later
 
       for(var f = 0; f < _locationBoom.length; f++) {
-        if(_locationBoom[f] === _routeBoom[1]) {
+        if(_locationBoom[f] === _routeBoom[1] || _routeBoom[1] === "*") {
+          f = (f === 0) ? 1 : 0;      // We need to definitely remove at least one thing
           _locationBoom.splice(0, f); // Remove the beginning segments since the dynamic route handles them
-          _routeBoom.splice(0, 1 );   // Remove the * from the route
+          _routeBoom.splice(0, 1);    // Remove the ** from the route
           break;
         }
       }
@@ -155,14 +200,16 @@ Nasa.Engine = (function(__export__) {
  
     // If the route ends with a dynamic segment, make sure the earlier
     // segments match.
-    if(_routeBoom[_routeBoom.length - 1] === '*') {
+    if(_routeBoom[_routeBoom.length - 1] === '**') {
+
+      Nasa.Engine.dbug('Found dynamic ending on ' + _routeBoom.join('/'));
 
       var oldLength = _locationBoom.length;   // Save the current length for comparison later
 
       for(var f = _locationBoom.length - 1; f >= 0; f--) {
-        if(_locationBoom[f] === _routeBoom[_routeBoom.length - 2]) {
-          _locationBoom.splice(f + 1, _locationBoom.length - (f + 1));  // Remove the ending segments
-          _routeBoom.splice(_routeBoom.length - 1, 1);                  // Remove the *
+        if(_locationBoom[f] === _routeBoom[_routeBoom.length - 2] || _routeBoom[_routeBoom.length - 2] === "*") {
+          _locationBoom.splice(f, _locationBoom.length - f);  // Remove the ending segments
+          _routeBoom.splice(_routeBoom.length - 1, 1);        // Remove the **
           break;
         } 
       }
@@ -309,6 +356,8 @@ Nasa = (function(__export__) {
     if(options['root']) options['root'] = _filterNamespace(options['root']);
 
     if(options['cascade'] && typeof options['cascade'] !== 'boolean') return console.error('Nasa: config(): Cascade must be a boolean value.');
+    
+    if(options['debug'] && typeof options['debug'] !== 'boolean') return console.error('Nasa: config(): Debug must be a boolean value.');
 
     Nasa.__config__ = options; 
   }
@@ -333,6 +382,10 @@ Nasa = (function(__export__) {
 
   __export__.houston = function(schedule, cascade) {
 
+    // Add debug headers
+    Nasa.Engine.dbug(true);
+
+
     // Set the default value for cascading to true
     if (typeof cascade === 'undefined') {
       cascade = (typeof Nasa.__config__['cascade'] === 'undefined') ? true : Nasa.__config__['cascade'];
@@ -356,6 +409,9 @@ Nasa = (function(__export__) {
       // indicates whether we will continue with the array iteration.
       return true;
     });
+
+    // Enter debugging footer
+    Nasa.Engine.dbug(false);
   }
 
 

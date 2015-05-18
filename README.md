@@ -21,7 +21,7 @@ Houston handles what we call your flight schedule. You pass houston an object th
 Nasa.houston({
     '/': ['module1', 'module2'],
     '/*/edit': ['module1', 'module3'],
-    '/admin/*': ['module4']
+    '/admin/**': ['module4']
 });
 ```
 You should place your houston and config method calls at the end of all of your JavaScript. 
@@ -52,18 +52,17 @@ Nasa.launch('module2', function() {
 ```
 
 ##Configuration
-So far the only option that we have for our configuration method is to specify your root folder and whether the routes 
-cascade. So say Nasa is at _http://www.yoursite.com/blog/_ in your app or site...
+So say Nasa is at _http://www.yoursite.com/blog/_ in your app or site...
 
 ```JavaScript
 Nasa.config({
-    root: '/blog',
-    cascade: true
+    root: '/blog',  // Root folder of Nasa
+    cascade: true,  // Whether houston will execute all of the routes
+    debug: false    // Whether the Nasa will log its activity
 });
 ```
 
-The default value for cascading is `true` which means that once houston finds a route, it will keep processing the routes 
-below it to check if there are more modules to launch in other applicable routes.
+_The default values for cascade and debug are shown above._
 
 ##Questions?
 Contact me at _eric@lmtlss.net_ or submit a PR.
