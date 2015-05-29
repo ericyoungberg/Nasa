@@ -1,56 +1,80 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function (global){
 /*
  * Nasa.js
  * @author: Eric Youngberg <eric@lmtlss.net>
  *
- * Nasa (1.3.0)
  * The simple JavaScript Module Launcher
  *
  * See README.md
  */
 
-var Nasa = {
+// Define all of Nasa
+'use strict';
 
-  /*
-   * Engine
-   *
-   * @type Array[Function]
-   *
-   * Holds all processing methods for Nasa.
-   */
-  Engine: [],
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-  /*
-   * __modules__
-   *
-   * @type Array[String]
-   * 
-   * Holds all modules registered with Nasa.
-   */
-  __modules__: [],
+/*
+ * Interface
+ */
 
+var _interfaceConfig = require('./interface/config');
 
-  /*
-   * __config__
-   *
-   * @type Object[String]
-   *
-   * Registers all configuration settings.
-   */
-  __config__: {},
+var _interfaceConfig2 = _interopRequireDefault(_interfaceConfig);
 
+var _interfaceHouston = require('./interface/houston');
 
-  /*
-   * __flight__
-   *
-   * @type Object[String]
-   *
-   * Keeps track of all current variables.
-   */
-  __flight__: {}
+var _interfaceHouston2 = _interopRequireDefault(_interfaceHouston);
 
-};
+var _interfaceLand = require('./interface/land');
 
+var _interfaceLand2 = _interopRequireDefault(_interfaceLand);
+
+var _interfaceLaunch = require('./interface/launch');
+
+var _interfaceLaunch2 = _interopRequireDefault(_interfaceLaunch);
+
+/*
+ * Engine
+ */
+
+var _engineDbug = require('./engine/dbug');
+
+var _engineDbug2 = _interopRequireDefault(_engineDbug);
+
+var _engineLocation = require('./engine/location');
+
+var _engineLocation2 = _interopRequireDefault(_engineLocation);
+
+var _engineRoute = require('./engine/route');
+
+var route = _interopRequireWildcard(_engineRoute);
+
+var Nasa = {};
+
+Nasa.__modules__ = [];
+Nasa.__config__ = {};
+Nasa.__flight__ = {};
+
+Nasa.config = _interfaceConfig2['default'];
+Nasa.houston = _interfaceHouston2['default'];
+Nasa.land = _interfaceLand2['default'];
+Nasa.launch = _interfaceLaunch2['default'];
+
+Nasa.Engine = {};
+
+Nasa.Engine.dbug = _engineDbug2['default'];
+Nasa.Engine.location = _engineLocation2['default'];
+Nasa.Engine.checkDynamic = route.checkDynamic;
+Nasa.Engine.check = route.check;
+
+// Expose the Nasa
+
+global.Nasa = Nasa;
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./engine/dbug":2,"./engine/location":3,"./engine/route":4,"./interface/config":5,"./interface/houston":6,"./interface/land":7,"./interface/launch":8}],2:[function(require,module,exports){
 /*
  * engine/dbug
  * @module Nasa.Engine
@@ -61,33 +85,34 @@ var Nasa = {
  * in the __config__.
  */
 
-Nasa.Engine = (function(__export__) {
+'use strict';
 
-  __export__.dbug = function(message) {
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
 
-    if(Nasa.__config__['debug']) {
-      if(typeof message === 'boolean') {
-        if(message) {
-          console.log("DEBUG | Nasa: Beginning debug session for this Houston instance...");
-          console.log("DEBUG | Nasa: -------------------------------------------------------");
-          console.log("DEBUG | Nasa: CONFIG = " + JSON.stringify(Nasa.__config__));
-          console.log("DEBUG |");
-        } else {
-          console.log("DEBUG |");
-          console.log("DEBUG | Nasa: -------------------------------------------------------");
-          console.log("DEBUG | Nasa: Ending debug session./") 
-        } 
+exports['default'] = function (message) {
+
+  if (Nasa.__config__['debug']) {
+    if (typeof message === 'boolean') {
+      if (message) {
+        console.log('DEBUG | Nasa: Beginning debug session for this Houston instance...');
+        console.log('DEBUG | Nasa: -------------------------------------------------------');
+        console.log('DEBUG | Nasa: CONFIG = ' + JSON.stringify(Nasa.__config__));
+        console.log('DEBUG |');
       } else {
-        console.log("DEBUG | Nasa: " + message);
+        console.log('DEBUG |');
+        console.log('DEBUG | Nasa: -------------------------------------------------------');
+        console.log('DEBUG | Nasa: Ending debug session./');
       }
+    } else {
+      console.log('DEBUG | Nasa: ' + message);
     }
   }
+};
 
-
-  return __export__;
-
-})(Nasa.Engine);
-
+module.exports = exports['default'];
+},{}],3:[function(require,module,exports){
 /*
  * engine/location
  * @module Nasa.Engine
@@ -98,23 +123,24 @@ Nasa.Engine = (function(__export__) {
  * designated in __config__.
  */
 
-Nasa.Engine = (function(__export__) {
+'use strict';
 
-  __export__.location = function() {
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
 
-    var location = window.location.pathname;
+exports['default'] = function () {
 
-    // Replace the retrieved location with any designated root path
-    if(Nasa.__config__.root) location = location.replace(Nasa.__config__.root, '');
-    
-    return location;
-  }
+  var location = window.location.pathname;
 
+  // Replace the retrieved location with any designated root path
+  if (Nasa.__config__.root) location = location.replace(Nasa.__config__.root, '');
 
-  return __export__;
+  return location;
+};
 
-})(Nasa.Engine);
-
+module.exports = exports['default'];
+},{}],4:[function(require,module,exports){
 /*
  * engine/route
  * @module Nasa.Engine
@@ -123,208 +149,211 @@ Nasa.Engine = (function(__export__) {
  * in houston's flight schedule.
  */
 
-Nasa.Engine = (function(__export__) {
+'use strict';
 
-  /*
-   * PRIVATE
-   ******************************************************************/
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+exports.check = check;
+exports.checkDynamic = checkDynamic;
 
-  var _routeBoom = [];      // Holds all segments of the route
-  var _locationBoom = [];   // Holds all segments of the current location
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+var _dbug = require('./dbug');
 
+var _dbug2 = _interopRequireDefault(_dbug);
 
-  /*
-   * _execute
-   *
-   * @param String route
-   *
-   * Loads all of the modules associated with that route.
-   */
-  function _execute(route) {
-  
-    /* DEBUG
-    */
-   Nasa.Engine.dbug("Executed the route '"+ route +"'\n");
+var _location = require('./location');
 
-    Nasa.__flight__.schedule[route].forEach(function(module) {
-      Nasa.__modules__[module](); 
-    });
-  }
+var _location2 = _interopRequireDefault(_location);
 
+/*
+ * PRIVATE
+ ******************************************************************/
 
-  /*
-   * _dynamicBeginning
-   *
-   * @return Boolean
-   *
-   * If the route starts with a dynamic segment, this truncates
-   * the location accordingly.
-   */
-  function _dynamicBeginning() {
- 
-    // If the route starts out as a dynamic segment, then find where
-    // the location should start.
-    if(_routeBoom[0] === '**') {
+var _routeBoom = []; // Holds all segments of the route
+var _locationBoom = []; // Holds all segments of the current location
 
-      Nasa.Engine.dbug('Found dynamic beginning on ' + _routeBoom.join('/'));
+/*
+ * _execute
+ *
+ * @param String route
+ *
+ * Loads all of the modules associated with that route.
+ */
+function _execute(route) {
 
-      var oldLength = _locationBoom.length;    // Save the current length for comparison later
+  /* DEBUG
+  */
+  (0, _dbug2['default'])('Executed the route \'' + route + '\'\n');
 
-      for(var f = 0; f < _locationBoom.length; f++) {
-        if(_locationBoom[f] === _routeBoom[1] || _routeBoom[1] === "*") {
-          f = (f === 0) ? 1 : 0;      // We need to definitely remove at least one thing
-          _locationBoom.splice(0, f); // Remove the beginning segments since the dynamic route handles them
-          _routeBoom.splice(0, 1);    // Remove the ** from the route
-          break;
-        }
+  Nasa.__flight__.schedule[route].forEach(function (module) {
+    Nasa.__modules__[module]();
+  });
+}
+
+/*
+ * _dynamicBeginning
+ *
+ * @return Boolean
+ *
+ * If the route starts with a dynamic segment, this truncates
+ * the location accordingly.
+ */
+function _dynamicBeginning() {
+
+  // If the route starts out as a dynamic segment, then find where
+  // the location should start.
+  if (_routeBoom[0] === '**') {
+
+    (0, _dbug2['default'])('Found dynamic beginning on ' + _routeBoom.join('/'));
+
+    var oldLength = _locationBoom.length; // Save the current length for comparison later
+
+    for (var f = 0; f < _locationBoom.length; f++) {
+      if (_locationBoom[f] === _routeBoom[1] || _routeBoom[1] === '*') {
+        f = f === 0 ? 1 : 0; // We need to definitely remove at least one thing
+        _locationBoom.splice(0, f); // Remove the beginning segments since the dynamic route handles them
+        _routeBoom.splice(0, 1); // Remove the ** from the route
+        break;
       }
-
-      // If location_boom never gets truncated, then this isn't the right route
-      if(oldLength === _locationBoom.length) return false; 
     }
 
-    return true;
+    // If location_boom never gets truncated, then this isn't the right route
+    if (oldLength === _locationBoom.length) return false;
   }
 
+  return true;
+}
 
-  /*
-   * _dynamicEnding
-   *
-   * @return Boolean
-   *
-   * If the route ends with a dynamic segment, this truncates
-   * the location accordingly.
-   */
-  function _dynamicEnding() {
- 
-    // If the route ends with a dynamic segment, make sure the earlier
-    // segments match.
-    if(_routeBoom[_routeBoom.length - 1] === '**') {
+/*
+ * _dynamicEnding
+ *
+ * @return Boolean
+ *
+ * If the route ends with a dynamic segment, this truncates
+ * the location accordingly.
+ */
+function _dynamicEnding() {
 
-      Nasa.Engine.dbug('Found dynamic ending on ' + _routeBoom.join('/'));
+  // If the route ends with a dynamic segment, make sure the earlier
+  // segments match.
+  if (_routeBoom[_routeBoom.length - 1] === '**') {
 
-      var oldLength = _locationBoom.length;   // Save the current length for comparison later
+    (0, _dbug2['default'])('Found dynamic ending on ' + _routeBoom.join('/'));
 
-      for(var f = _locationBoom.length - 1; f >= 0; f--) {
-        if(_locationBoom[f] === _routeBoom[_routeBoom.length - 2] || _routeBoom[_routeBoom.length - 2] === "*") {
-          _locationBoom.splice(f, _locationBoom.length - f);  // Remove the ending segments
-          _routeBoom.splice(_routeBoom.length - 1, 1);        // Remove the **
-          break;
-        } 
+    var oldLength = _locationBoom.length; // Save the current length for comparison later
+
+    for (var f = _locationBoom.length - 1; f >= 0; f--) {
+      if (_locationBoom[f] === _routeBoom[_routeBoom.length - 2] || _routeBoom[_routeBoom.length - 2] === '*') {
+        _locationBoom.splice(f, _locationBoom.length - f); // Remove the ending segments
+        _routeBoom.splice(_routeBoom.length - 1, 1); // Remove the **
+        break;
       }
-
-      // If location_boom never gets truncated, then this isn't the right route
-      if(oldLength === _locationBoom.length) return false;
     }
 
-    return true; 
+    // If location_boom never gets truncated, then this isn't the right route
+    if (oldLength === _locationBoom.length) return false;
   }
 
+  return true;
+}
 
+/*
+ * EXPORTS
+ ***************************************************************/
 
+/*
+ * check
+ *
+ * @param String route
+ * @return Boolean
+ *
+ * Compares the current location to this static route.
+ */
 
-  /*
-   * EXPORTS
-   ***************************************************************/
+function check(route) {
 
-  /*
-   * check
-   *
-   * @param String route
-   * @return Boolean
-   *
-   * Compares the current location to this static route.
-   */
-  __export__.check = function(route) {
-
-    // If this is the current location, then execute the modules in this route.
-    if(Nasa.Engine.location() === route) {
-      _execute(route);
-      return true;
-    }
-
-    return false;
-  }
-
-
-  /*
-   * checkDynamic
-   * 
-   * @param String route
-   * @return Boolean
-   *
-   * Compares the current location to this dynamic route
-   * after breaking up the dynamic route's wildcards.
-   */
-  __export__.checkDynamic = function(route) {
-
-    // Split up the components of both the dynamic route and current location.
-    _routeBoom = route.split('/');
-    _locationBoom = Nasa.Engine.location().split('/');
-
-    // Since this route is dynamic, it is okay for the route to be shorter
-    // than the location, but not the other way around
-    if(_routeBoom.length > _locationBoom.length) return false;
-
-    // If there is a dynamic beginning or ending, these functions will try to parse the
-    // request. Only if the parsing fails will they return false.
-    if(!_dynamicBeginning() || !_dynamicEnding()) return false;
-
-
-    // Compare the segments iteratively
-    for(var i = 0; i < _routeBoom.length; i++) {
-
-      // If this is a dynamic segment, then move forward.
-      if(_routeBoom[i] === '*') continue; 
-
-      var index; // Allocate an index variable in this scope for use below.
-
-      // If the segment is semi-dynamic, check that the attached part matches
-      if((index = _routeBoom[i].indexOf('*')) !== -1) {
-
-        if(index === 0) {                                 //--> Wildcard at beginning
-
-          var end = _routeBoom[i].substr(1, _routeBoom[i].length);
-
-          // If the string after the wildcard isn't at the end of the location,
-          // then this isn't the route you are looking for.
-          if(_locationBoom[i].indexOf(end) !== _locationBoom[i].length - 1 - (end.length - 1)) return false;
-
-        } else if(index === _routeBoom[i].length - 1) {   //--> Wildcard at end
-
-          var beginning = _routeBoom[i].substr(0, index);
-
-          // If the string before the wildcard isn't at the beginning of the location,
-          // then this isn't the route you are looking for.
-          if(_locationBoom[i].substr(0, beginning.length) !== beginning) return false;
-        
-        } else {                                          //--> Wildcard in the middle
-        
-        }
-
-        // If we didn't return while checking semi-dynamic above, then we can move on
-        // to the next segment.
-        continue;
-      }
-
-
-      // If this segment isn't dynamic, do a straight comparison
-      if(_routeBoom[i] !== _locationBoom[i]) return false;
-    }
-
-    // If we didn't return, then that means we didn't find any reason why this 
-    // shouldn't be the correct route. So let's execute the modules.
+  // If this is the current location, then execute the modules in this route.
+  if ((0, _location2['default'])() === route) {
     _execute(route);
-
     return true;
   }
 
+  return false;
+}
 
-  return __export__;
+/*
+ * checkDynamic
+ * 
+ * @param String route
+ * @return Boolean
+ *
+ * Compares the current location to this dynamic route
+ * after breaking up the dynamic route's wildcards.
+ */
 
-})(Nasa.Engine);
+function checkDynamic(route) {
 
+  // Split up the components of both the dynamic route and current location.
+  _routeBoom = route.split('/');
+  _locationBoom = Nasa.Engine.location().split('/');
+
+  // Since this route is dynamic, it is okay for the route to be shorter
+  // than the location, but not the other way around
+  if (_routeBoom.length > _locationBoom.length) return false;
+
+  // If there is a dynamic beginning or ending, these functions will try to parse the
+  // request. Only if the parsing fails will they return false.
+  if (!_dynamicBeginning() || !_dynamicEnding()) return false;
+
+  // Compare the segments iteratively
+  for (var i = 0; i < _routeBoom.length; i++) {
+
+    // If this is a dynamic segment, then move forward.
+    if (_routeBoom[i] === '*') continue;
+
+    var index; // Allocate an index variable in this scope for use below.
+
+    // If the segment is semi-dynamic, check that the attached part matches
+    if ((index = _routeBoom[i].indexOf('*')) !== -1) {
+
+      if (index === 0) {
+        //--> Wildcard at beginning
+
+        var end = _routeBoom[i].substr(1, _routeBoom[i].length);
+
+        // If the string after the wildcard isn't at the end of the location,
+        // then this isn't the route you are looking for.
+        if (_locationBoom[i].indexOf(end) !== _locationBoom[i].length - 1 - (end.length - 1)) return false;
+      } else if (index === _routeBoom[i].length - 1) {
+        //--> Wildcard at end
+
+        var beginning = _routeBoom[i].substr(0, index);
+
+        // If the string before the wildcard isn't at the beginning of the location,
+        // then this isn't the route you are looking for.
+        if (_locationBoom[i].substr(0, beginning.length) !== beginning) return false;
+      } else {}
+
+      // If we didn't return while checking semi-dynamic above, then we can move on
+      // to the next segment.
+      continue;
+    }
+
+    // If this segment isn't dynamic, do a straight comparison
+    if (_routeBoom[i] !== _locationBoom[i]) return false;
+  }
+
+  // If we didn't return, then that means we didn't find any reason why this
+  // shouldn't be the correct route. So let's execute the modules.
+  _execute(route);
+
+  return true;
+}
+
+//--> Wildcard in the middle
+},{"./dbug":2,"./location":3}],5:[function(require,module,exports){
 /*
  * interface/config
  * @module Nasa
@@ -334,39 +363,38 @@ Nasa.Engine = (function(__export__) {
  * Defines the configuration for nasa to follow.
  */
 
-Nasa = (function(__export__) {
+/*
+ * _filterNamespace
+ *
+ * @param String namespace
+ * @return String
+ */
+'use strict';
 
-  /*
-   * _filterNamespace
-   *
-   * @param String namespace
-   * @return String
-   */
-  function _filterNamespace(namespace) {
-    return (namespace.charAt(namespace.length - 1) == '/') ? namespace.substr(0, namespace.length - 2) : namespace;  
-  }
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+function _filterNamespace(namespace) {
+  return namespace.charAt(namespace.length - 1) == '/' ? namespace.substr(0, namespace.length - 2) : namespace;
+}
 
+/*
+ * export
+ */
 
+exports['default'] = function (options) {
 
-  /*
-   * export
-   */
-  __export__.config = function(options) {
+  if (options['root']) options['root'] = _filterNamespace(options['root']);
 
-    if(options['root']) options['root'] = _filterNamespace(options['root']);
+  if (options['cascade'] && typeof options['cascade'] !== 'boolean') return console.error('Nasa: config(): Cascade must be a boolean value.');
 
-    if(options['cascade'] && typeof options['cascade'] !== 'boolean') return console.error('Nasa: config(): Cascade must be a boolean value.');
-    
-    if(options['debug'] && typeof options['debug'] !== 'boolean') return console.error('Nasa: config(): Debug must be a boolean value.');
+  if (options['debug'] && typeof options['debug'] !== 'boolean') return console.error('Nasa: config(): Debug must be a boolean value.');
 
-    Nasa.__config__ = options; 
-  }
+  Nasa.__config__ = options;
+};
 
-
-  return __export__;
-
-})(Nasa);
-
+module.exports = exports['default'];
+},{}],6:[function(require,module,exports){
 /*
  * interface/houston
  * @module Nasa
@@ -378,47 +406,55 @@ Nasa = (function(__export__) {
  * for parsing.
  */
 
-Nasa = (function(__export__) {
+'use strict';
 
-  __export__.houston = function(schedule, cascade) {
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
 
-    // Add debug headers
-    Nasa.Engine.dbug(true);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+var _engineDbug = require('../engine/dbug');
 
-    // Set the default value for cascading to true
-    if (typeof cascade === 'undefined') {
-      cascade = (typeof Nasa.__config__['cascade'] === 'undefined') ? true : Nasa.__config__['cascade'];
-    }
+var _engineDbug2 = _interopRequireDefault(_engineDbug);
 
-    // Place the schedule in our current flight to reference
-    // from other internal modules.
-    Nasa.__flight__.schedule = schedule;
-    
-    // Iterate through the launch schedule
-    Object.keys(schedule).every(function(route) {
+var _engineRoute = require('../engine/route');
 
-      // Check our route based on whether it is dynamic or not
-      if(route.indexOf('*') !== -1) {
-        if(Nasa.Engine.checkDynamic(route)) return cascade;
-      } else {
-        if(Nasa.Engine.check(route)) return cascade;
-      }
+exports['default'] = function (schedule, cascade) {
 
-      // .every requires that we return either true or false which
-      // indicates whether we will continue with the array iteration.
-      return true;
-    });
+  // Add debug headers
+  (0, _engineDbug2['default'])(true);
 
-    // Enter debugging footer
-    Nasa.Engine.dbug(false);
+  // Set the default value for cascading to true
+  if (typeof cascade === 'undefined') {
+    cascade = typeof Nasa.__config__['cascade'] === 'undefined' ? true : Nasa.__config__['cascade'];
   }
 
+  // Place the schedule in our current flight to reference
+  // from other internal modules.
+  Nasa.__flight__.schedule = schedule;
 
-  return __export__;
+  // Iterate through the launch schedule
+  Object.keys(schedule).every(function (route) {
 
-})(Nasa);
+    // Check our route based on whether it is dynamic or not
+    if (route.indexOf('*') !== -1) {
+      if ((0, _engineRoute.checkDynamic)(route)) return cascade;
+    } else {
+      if ((0, _engineRoute.check)(route)) return cascade;
+    }
 
+    // .every requires that we return either true or false which
+    // indicates whether we will continue with the array iteration.
+    return true;
+  });
+
+  // Enter debugging footer
+  (0, _engineDbug2['default'])(false);
+};
+
+module.exports = exports['default'];
+},{"../engine/dbug":2,"../engine/route":4}],7:[function(require,module,exports){
 /*
  * interface/land
  * @module Nasa
@@ -429,28 +465,29 @@ Nasa = (function(__export__) {
  * Fetches a module that is in the repository.
  */
 
-Nasa = (function(__export__) {
+'use strict';
 
-  __export__.land = function(name) {
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
 
-    if(typeof name === 'string') {
+exports['default'] = function (name) {
 
-      // Find the module from the module repository
-      if(Nasa.__modules__[name]){
-        return Nasa.__modules__[name](); 
-      } else {
-        console.error('Nasa.land(' + name + '): ' + name + ' doesn\'t exist.'); 
-      }
+  if (typeof name === 'string') {
 
+    // Find the module from the module repository
+    if (Nasa.__modules__[name]) {
+      return Nasa.__modules__[name]();
     } else {
-      console.error('Nasa.land(' + name + '): Module name must be a string.');
+      console.error('Nasa.land(' + name + '): ' + name + ' doesn\'t exist.');
     }
+  } else {
+    console.error('Nasa.land(' + name + '): Module name must be a string.');
   }
+};
 
-  return __export__;
-
-})(Nasa);
-
+module.exports = exports['default'];
+},{}],8:[function(require,module,exports){
 /*
  * interface/launch
  * @module Nasa
@@ -461,27 +498,28 @@ Nasa = (function(__export__) {
  * Adds a new module to the repository.
  */
 
-Nasa = (function(__export__) {
-  
-  __export__.launch = function(name, module) {
+'use strict';
 
-    if(typeof name === 'string') {
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
 
-      // If there is already a module with that name, then send an error
-      if(!Nasa.__modules__[name]) {
+exports['default'] = function (name, module) {
 
-        // Assign this module to its space in the repository
-        Nasa.__modules__[name] = module;
+  if (typeof name === 'string') {
 
-      } else {
-        console.error('Nasa.launch(' + name + '): ' + name + ' already exists.');  
-      }
+    // If there is already a module with that name, then send an error
+    if (!Nasa.__modules__[name]) {
 
+      // Assign this module to its space in the repository
+      Nasa.__modules__[name] = module;
     } else {
-      console.error('Nasa.launch(' + name + '): Module name must be a string.');
+      console.error('Nasa.launch(' + name + '): ' + name + ' already exists.');
     }
+  } else {
+    console.error('Nasa.launch(' + name + '): Module name must be a string.');
   }
+};
 
-  return __export__;
-
-})(Nasa);
+module.exports = exports['default'];
+},{}]},{},[1]);

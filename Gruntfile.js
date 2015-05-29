@@ -3,6 +3,10 @@ var mountFolder = function (connect, dir) {
     return connect.static(require('path').resolve(dir));
 };
 
+var sourceset = require('sourceset');
+
+var packageFiles = ['bower.json', 'package.json'];
+
 module.exports = function(grunt) {
 
 	//Load all grunt tasks required
@@ -14,6 +18,7 @@ module.exports = function(grunt) {
 		port: 8000
 	};
 
+
 	grunt.initConfig({
 
 		watch: {
@@ -22,7 +27,7 @@ module.exports = function(grunt) {
 			},
 			js: {
 				files: ['lib/*.js', 'lib/**/*.js'],
-				tasks: ['uglify']
+				tasks: ['babel:dist', 'browserify:local']
 			}
 		},
 
@@ -55,21 +60,25 @@ module.exports = function(grunt) {
             cwd: 'tmp/',
             src: ['Nasa.js'],
             dest: 'dist/'
-          },
-          {
-            expand: true,
-            cwd: 'tmp/',
-            src: ['Nasa.min.js'],
-            dest: 'dist/'
           }
         ]
       }
 		},
 
-    concat: {
+    babel: {
       dist: {
-        src: ['lib/Nasa.js', 'lib/**/*.js'],
-        dest: 'dist/Nasa.js'
+        files: sourceset({
+          files: ['Nasa.js', 'engine/*.js', 'interface/*.js'],
+          src: 'lib',
+          dest: 'tmp/lib'
+        })
+      }
+    },
+
+    browserify: {
+      local: {
+        src: ['tmp/lib/Nasa.js'],
+        dest: 'tmp/Nasa.js'
       } 
     },
 
@@ -79,20 +88,60 @@ module.exports = function(grunt) {
           beautify: false
         },
 				files: {
-          'tmp/Nasa.min.js': [
-          'lib/*.js', 
-          'lib/**/*.js'
-          ]
+          'dist/Nasa.min.js': 'tmp/Nasa.js'
         }
 			}
-		}
+		},
+
+    version: {
+      major: {
+        options: {
+          release: 'major' 
+        },
+        src: packageFiles 
+      }, 
+      minor: {
+        options: {
+          release: 'minor' 
+        },
+        src: packageFiles 
+      }, 
+      patch: {
+        options: {
+          release: 'patch' 
+        },
+        src: packageFiles 
+      } 
+    }
 
 });
+
+  grunt.registerTask('major', function() {
+    grunt.task.run([
+      'version:major',
+      'build'
+    ]); 
+  });
+
+  grunt.registerTask('minor', function() {
+    grunt.task.run([
+      'version:minor',
+      'build'
+    ]); 
+  });
+
+  grunt.registerTask('patch', function() {
+    grunt.task.run([
+      'version:patch',
+      'build'
+    ]); 
+  });
 
 	//Task to start server
 	grunt.registerTask('serve', function() {
 		grunt.task.run([
-			'uglify:local',
+      'babel:dist',
+      'browserify:local',
 			'connect',
 			'open',
 			'watch'
@@ -102,8 +151,9 @@ module.exports = function(grunt) {
   grunt.registerTask('build', function() {
     console.log("Building...");
     grunt.task.run([
+      'babel:dist',
+      'browserify:local',
       'uglify:local',
-      'concat:dist',
       'copy:dist'
     ]);
   });
