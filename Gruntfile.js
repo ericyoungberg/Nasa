@@ -3,8 +3,6 @@ var mountFolder = function (connect, dir) {
     return connect.static(require('path').resolve(dir));
 };
 
-var change = true;
-
 var sourceset = require('sourceset');
 
 var packageFiles = ['bower.json', 'package.json'];

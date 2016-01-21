@@ -73,6 +73,7 @@ Nasa.Engine.check = route.check;
 // Expose the Nasa
 
 global.Nasa = Nasa;
+
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./engine/dbug":2,"./engine/location":3,"./engine/route":4,"./interface/config":5,"./interface/houston":6,"./interface/land":7,"./interface/launch":8}],2:[function(require,module,exports){
 /*
@@ -96,22 +97,23 @@ exports['default'] = function (message) {
   if (Nasa.__config__['debug']) {
     if (typeof message === 'boolean') {
       if (message) {
-        console.log('DEBUG | Nasa: Beginning debug session for this Houston instance...');
-        console.log('DEBUG | Nasa: -------------------------------------------------------');
-        console.log('DEBUG | Nasa: CONFIG = ' + JSON.stringify(Nasa.__config__));
-        console.log('DEBUG |');
+        console.log("DEBUG | Nasa: Beginning debug session for this Houston instance...");
+        console.log("DEBUG | Nasa: -------------------------------------------------------");
+        console.log("DEBUG | Nasa: CONFIG = " + JSON.stringify(Nasa.__config__));
+        console.log("DEBUG |");
       } else {
-        console.log('DEBUG |');
-        console.log('DEBUG | Nasa: -------------------------------------------------------');
-        console.log('DEBUG | Nasa: Ending debug session./');
+        console.log("DEBUG |");
+        console.log("DEBUG | Nasa: -------------------------------------------------------");
+        console.log("DEBUG | Nasa: Ending debug session./");
       }
     } else {
-      console.log('DEBUG | Nasa: ' + message);
+      console.log("DEBUG | Nasa: " + message);
     }
   }
 };
 
 module.exports = exports['default'];
+
 },{}],3:[function(require,module,exports){
 /*
  * engine/location
@@ -123,23 +125,18 @@ module.exports = exports['default'];
  * designated in __config__.
  */
 
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-exports['default'] = function () {
-
-  var location = window.location.pathname;
-
-  // Replace the retrieved location with any designated root path
-  if (Nasa.__config__.root) location = location.replace(Nasa.__config__.root, '');
-
-  return location;
+exports["default"] = function () {
+  return window.location.pathname;
 };
 
-module.exports = exports['default'];
+module.exports = exports["default"];
+
 },{}],4:[function(require,module,exports){
 /*
  * engine/route
@@ -183,9 +180,10 @@ var _locationBoom = []; // Holds all segments of the current location
  */
 function _execute(route) {
 
-  /* DEBUG
-  */
-  (0, _dbug2['default'])('Executed the route \'' + route + '\'\n');
+  /* 
+   * DEBUG
+   */
+  (0, _dbug2['default'])("Executed the route '" + route + "'\n");
 
   Nasa.__flight__.schedule[route].forEach(function (module) {
     Nasa.__modules__[module]();
@@ -211,7 +209,7 @@ function _dynamicBeginning() {
     var oldLength = _locationBoom.length; // Save the current length for comparison later
 
     for (var f = 0; f < _locationBoom.length; f++) {
-      if (_locationBoom[f] === _routeBoom[1] || _routeBoom[1] === '*') {
+      if (_locationBoom[f] === _routeBoom[1] || _routeBoom[1] === "*") {
         f = f === 0 ? 1 : 0; // We need to definitely remove at least one thing
         _locationBoom.splice(0, f); // Remove the beginning segments since the dynamic route handles them
         _routeBoom.splice(0, 1); // Remove the ** from the route
@@ -245,7 +243,7 @@ function _dynamicEnding() {
     var oldLength = _locationBoom.length; // Save the current length for comparison later
 
     for (var f = _locationBoom.length - 1; f >= 0; f--) {
-      if (_locationBoom[f] === _routeBoom[_routeBoom.length - 2] || _routeBoom[_routeBoom.length - 2] === '*') {
+      if (_locationBoom[f] === _routeBoom[_routeBoom.length - 2] || _routeBoom[_routeBoom.length - 2] === "*") {
         _locationBoom.splice(f, _locationBoom.length - f); // Remove the ending segments
         _routeBoom.splice(_routeBoom.length - 1, 1); // Remove the **
         break;
@@ -334,7 +332,7 @@ function checkDynamic(route) {
         // If the string before the wildcard isn't at the beginning of the location,
         // then this isn't the route you are looking for.
         if (_locationBoom[i].substr(0, beginning.length) !== beginning) return false;
-      } else {}
+      } else {} //--> Wildcard in the middle
 
       // If we didn't return while checking semi-dynamic above, then we can move on
       // to the next segment.
@@ -352,7 +350,6 @@ function checkDynamic(route) {
   return true;
 }
 
-//--> Wildcard in the middle
 },{"./dbug":2,"./location":3}],5:[function(require,module,exports){
 /*
  * interface/config
@@ -375,7 +372,13 @@ Object.defineProperty(exports, '__esModule', {
   value: true
 });
 function _filterNamespace(namespace) {
-  return namespace.charAt(namespace.length - 1) == '/' ? namespace.substr(0, namespace.length - 2) : namespace;
+
+  var normalized = '';
+
+  normalized = namespace.charAt(namespace.length - 1) === '/' ? namespace.substr(0, namespace.length - 1) : namespace;
+  normalized = normalized.charAt(0) === '/' ? normalized.substr(1, normalized.length - 1) : normalized;
+
+  return '/' + normalized;
 }
 
 /*
@@ -394,6 +397,7 @@ exports['default'] = function (options) {
 };
 
 module.exports = exports['default'];
+
 },{}],6:[function(require,module,exports){
 /*
  * interface/houston
@@ -437,15 +441,17 @@ exports['default'] = function (schedule, cascade) {
   // Iterate through the launch schedule
   Object.keys(schedule).every(function (route) {
 
+    var builtRoute = _buildRoute(route);
+    Nasa.__flight__.schedule[builtRoute] = Nasa.__flight__.schedule[route];
+    delete Nasa.__flight__.schedule[route];
+
     // Check our route based on whether it is dynamic or not
-    if (route.indexOf('*') !== -1) {
-      if ((0, _engineRoute.checkDynamic)(route)) return cascade;
+    if (builtRoute.indexOf('*') !== -1) {
+      if ((0, _engineRoute.checkDynamic)(builtRoute)) return cascade;
     } else {
-      if ((0, _engineRoute.check)(route)) return cascade;
+      if ((0, _engineRoute.check)(builtRoute)) return cascade;
     }
 
-    // .every requires that we return either true or false which
-    // indicates whether we will continue with the array iteration.
     return true;
   });
 
@@ -453,7 +459,31 @@ exports['default'] = function (schedule, cascade) {
   (0, _engineDbug2['default'])(false);
 };
 
+/*
+ * private  _buildRoute
+ * 
+ * Builds the route string by normalizing the input from 
+ * the houston config.
+ *
+ * @param String route
+ *
+ * @return String
+ */
+function _buildRoute(route) {
+
+  var newRoute = route;
+
+  // Normalize the route string
+  newRoute = newRoute.indexOf('/') === 0 ? newRoute.slice(1, newRoute.length) : newRoute;
+  newRoute = '/' + newRoute;
+
+  // Prepend the root if the user defined one
+  newRoute = Nasa.__config__['root'] ? Nasa.__config__['root'] + newRoute : newRoute;
+
+  return newRoute;
+}
 module.exports = exports['default'];
+
 },{"../engine/dbug":2,"../engine/route":4}],7:[function(require,module,exports){
 /*
  * interface/land
@@ -487,6 +517,7 @@ exports['default'] = function (name) {
 };
 
 module.exports = exports['default'];
+
 },{}],8:[function(require,module,exports){
 /*
  * interface/launch
@@ -522,4 +553,5 @@ exports['default'] = function (name, module) {
 };
 
 module.exports = exports['default'];
+
 },{}]},{},[1]);
