@@ -185,9 +185,21 @@ function _execute(route) {
    */
   (0, _dbug2['default'])("Executed the route '" + route + "'\n");
 
-  Nasa.__flight__.schedule[route].forEach(function (module) {
-    Nasa.__modules__[module]();
-  });
+  // Make sure that the route exists
+  if (Nasa.__flight__.schedule[route]) {
+
+    Nasa.__flight__.schedule[route].forEach(function (module) {
+
+      // Make sure each module exists
+      if (Nasa.__modules__[module]) {
+        Nasa.__modules__[module]();
+      } else {
+        (0, _dbug2['default'])("ERR: '" + module + "' is not a registered module!");
+      }
+    });
+  } else {
+    (0, _dbug2['default'])("ERR: Can't find '" + route + "' in the flight schedule!");
+  }
 }
 
 /*
@@ -442,8 +454,12 @@ exports['default'] = function (schedule, cascade) {
   Object.keys(schedule).every(function (route) {
 
     var builtRoute = _buildRoute(route);
-    Nasa.__flight__.schedule[builtRoute] = Nasa.__flight__.schedule[route];
-    delete Nasa.__flight__.schedule[route];
+
+    // Replace the route if the name has changed
+    if (route !== builtRoute) {
+      Nasa.__flight__.schedule[builtRoute] = Nasa.__flight__.schedule[route];
+      delete Nasa.__flight__.schedule[route];
+    }
 
     // Check our route based on whether it is dynamic or not
     if (builtRoute.indexOf('*') !== -1) {
