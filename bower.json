@@ -1,6 +1,6 @@
 {
   "name": "nasa",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "authors": [
     "Eric Youngberg <eric@lmtlss.net>"
   ],
@@ -16,5 +16,14 @@
     "launcher"
   ],
   "license": "MIT",
-  "homepage": "http://github.com/ericyoungberg/nasa"
+  "homepage": "http://github.com/ericyoungberg/nasa",
+  "_release": "1.4.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.4.1",
+    "commit": "dfe9ff56448e91e93c3aef024985c3b8af4f60da"
+  },
+  "_source": "git://github.com/ericyoungberg/Nasa.git",
+  "_target": ">=1.4.1",
+  "_originalSource": "nasa"
 }

@@ -1,6 +1,6 @@
 {
   "name": "nasa",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "devDependencies": {
     "connect-livereload": "~0.2.0",
     "grunt": "~0.4.1",
