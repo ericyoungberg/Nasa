@@ -119,23 +119,25 @@ module.exports = exports['default'];
  * engine/location
  * @module Nasa.Engine
  *
- * @return String location
- *
  * Grabs the current location of the website based upon the root path
  * designated in __config__.
+ *
+ * @return String location
  */
 
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
-exports["default"] = function () {
-  return window.location.pathname;
+exports['default'] = function () {
+  var path = window.location.pathname;
+
+  return path.charAt(path.length - 1) === '/' ? path : path + '/';
 };
 
-module.exports = exports["default"];
+module.exports = exports['default'];
 
 },{}],4:[function(require,module,exports){
 /*
