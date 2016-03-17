@@ -132,9 +132,14 @@ Object.defineProperty(exports, '__esModule', {
 });
 
 exports['default'] = function () {
-  var path = window.location.pathname;
+  var path = window.location.pathname,
+      segments = path.split('/');
 
-  return path.charAt(path.length - 1) === '/' ? path : path + '/';
+  if (segments[segments.length - 1].indexOf('.') === -1) {
+    path = path.charAt(path.length - 1) === '/' ? path : path + '/';
+  }
+
+  return path;
 };
 
 module.exports = exports['default'];
