@@ -12,6 +12,7 @@ not catering them to your app state.
 This is where Nasa comes in.
 
 ## Installation
+With NPM: `npm install nasa-launcher`
 With Bower: `bower install nasa`
 
 ##Houston
